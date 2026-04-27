@@ -26,6 +26,9 @@ public class Gallery {
     @JsonBackReference
     private User owner;
 
+    @Column
+    private String description;
+
     @Column(nullable = false)
     private String title;
 
@@ -42,6 +45,13 @@ public class Gallery {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTitle() {
