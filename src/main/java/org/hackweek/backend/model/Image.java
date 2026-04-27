@@ -29,6 +29,9 @@ public class Image {
     @Column(nullable = false)
     private String url;
 
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
     @Column(name = "order_index")
     private Integer orderIndex;
 
@@ -61,6 +64,14 @@ public class Image {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public Integer getOrderIndex() {
