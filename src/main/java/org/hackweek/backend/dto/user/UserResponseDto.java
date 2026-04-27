@@ -1,6 +1,6 @@
 package org.hackweek.backend.dto.user;
 
-import org.hackweek.backend.model.Gallery;
+import org.hackweek.backend.dto.gallery.GalleryResponseDto;
 import java.util.List;
 import java.time.Instant;
 
@@ -11,6 +11,6 @@ public record UserResponseDto(
         String firstName,
         String lastName,
         String description,
-        List<Gallery> galleries,
+        List<GalleryResponseDto> galleries,
         Instant createdAt) {
 }

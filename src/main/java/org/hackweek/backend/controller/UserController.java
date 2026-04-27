@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hackweek.backend.dto.user.CreateUserRequestDto;
 import org.hackweek.backend.dto.user.UserResponseDto;
+import org.hackweek.backend.dto.gallery.GalleryResponseDto;
 import org.hackweek.backend.model.User;
 import org.hackweek.backend.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,17 @@ public class UserController {
             user.getFirstName(),
             user.getLastName(),
             user.getDescription(),
-            user.getGalleries(),
+            user.getGalleries() == null
+                ? List.of()
+                : user.getGalleries().stream()
+                    .map(gallery -> new GalleryResponseDto(
+                        gallery.getId(),
+                        gallery.getOwner() != null ? gallery.getOwner().getId() : null,
+                        gallery.getTitle(),
+                        gallery.getDescription(),
+                        gallery.getOwner() != null ? gallery.getOwner().getClerkUserId() : null
+                    ))
+                    .toList(),
             user.getCreatedAt()
         );
     }
