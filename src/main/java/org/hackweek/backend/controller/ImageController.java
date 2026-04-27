@@ -1,9 +1,10 @@
 package org.hackweek.backend.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import org.hackweek.backend.dto.image.ImageResponseDto;
 import org.hackweek.backend.dto.image.ImageUploadRequestDto;
 import org.hackweek.backend.dto.image.ImageUploadResponseDto;
 import org.hackweek.backend.service.ImageService;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,28 +29,9 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @GetMapping("/images")
-    public ResponseEntity<String> getAllImages() {
-        return ResponseEntity.ok("List of images");
-    }
-
-    @GetMapping("/images/{id}")
-    public ResponseEntity<String> getImage(@PathVariable String id) {
-        return ResponseEntity.ok("Image data");
-    }
-
-    @PostMapping("/images")
-    public ResponseEntity<String> createImage() {
-        return ResponseEntity.ok("Image created");
-    }
-
-    @PutMapping("/images/{id}")
-    public ResponseEntity<String> updateImage(@PathVariable String id) {
-        return ResponseEntity.ok("Image updated");
-    }
-
     @DeleteMapping("/images/{id}")
-    public ResponseEntity<String> deleteImage(@PathVariable String id) {
+    public ResponseEntity<String> deleteImage(@PathVariable Long id) {
+        imageService.deleteImage(id);
         return ResponseEntity.ok("Image deleted");
     }
 
@@ -68,7 +49,9 @@ public class ImageController {
             }
 
             ImageService.UploadResult uploaded =
-                    imageService.uploadToGalleryBucket(galleryId, request.getFile());
+                    imageService.uploadToGalleryBucket(galleryId, request.getFile(), request.getTitle());
+
+    
 
             ImageUploadResponseDto response = new ImageUploadResponseDto(
                     uploaded.imageId(),
@@ -96,5 +79,11 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                     .body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @GetMapping("/galleries/{galleryId}/images")
+    public ResponseEntity<List<ImageResponseDto>> getGalleryImages(@PathVariable Long galleryId) {
+        List<ImageResponseDto> images = imageService.getImagesByGalleryId(galleryId);
+        return ResponseEntity.ok(images);
     }
 }
