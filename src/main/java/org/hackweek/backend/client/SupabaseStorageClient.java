@@ -50,18 +50,46 @@ public class SupabaseStorageClient {
             );
         }
 
-        String publicUrl = stripTrailingSlash(supabaseUrl)
-            + "/storage/v1/object/public/"
+        String baseUrl = stripTrailingSlash(supabaseUrl);
+        String publicUrl = baseUrl + "/storage/v1/object/public/" + bucket + "/" + objectPath;
+        String thumbnailUrl = baseUrl
+            + "/storage/v1/render/image/public/"
+            + bucket
+            + "/"
+            + objectPath
+            + "?width=200&height=200&resize=cover";
+
+        return new UploadResult(objectPath, publicUrl, thumbnailUrl);
+    }
+
+    public void delete(String bucket, String objectPath) {
+        String deleteUrl = stripTrailingSlash(supabaseUrl)
+            + "/storage/v1/object/"
             + bucket
             + "/"
             + objectPath;
 
-        return new UploadResult(objectPath, publicUrl);
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(deleteUrl))
+            .header("Authorization", "Bearer " + supabaseServiceRoleKey)
+            .header("apikey", supabaseServiceRoleKey)
+            .DELETE()
+            .build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                throw new RuntimeException("Supabase delete failed: " + response.statusCode() + " - " + response.body());
+            }
+        } catch (IOException | InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Error deleting object from Supabase: " + e.getMessage(), e);
+        }
     }
 
     private static String stripTrailingSlash(String url) {
         return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
-    public record UploadResult(String objectPath, String publicUrl) {}
+    public record UploadResult(String objectPath, String publicUrl, String thumbnailUrl) {}
 }
