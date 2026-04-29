@@ -1,18 +1,13 @@
 package org.hackweek.backend.model;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "galleries")
@@ -25,6 +20,11 @@ public class Gallery {
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User owner;
+
+    @OneToMany(mappedBy = "gallery", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderIndex ASC, createdAt ASC")
+    @JsonManagedReference
+    private List<Image> images = new ArrayList<>();
 
     @Column
     private String description;
@@ -45,6 +45,10 @@ public class Gallery {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public List<Image> getImages() {
+        return images;
     }
 
     public String getDescription() {

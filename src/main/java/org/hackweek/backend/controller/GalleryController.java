@@ -26,8 +26,8 @@ public class GalleryController {
 
     @PostMapping
     public ResponseEntity<GalleryResponseDto> createGallery(
-        @RequestBody CreateGalleryRequestDto request,
-        @AuthenticationPrincipal Jwt jwt
+            @RequestBody CreateGalleryRequestDto request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
         Gallery galleryToCreate = new Gallery();
         galleryToCreate.setTitle(request.title());
@@ -36,22 +36,29 @@ public class GalleryController {
         Gallery created = galleryService.createGallery(galleryToCreate, jwt.getSubject());
 
         GalleryResponseDto response = new GalleryResponseDto(
-            created.getId(),
-            created.getOwner() != null ? created.getOwner().getId() : null,
-            created.getTitle(),
-            created.getDescription(),
-            created.getOwner() != null ? created.getOwner().getClerkUserId() : null
+                created.getId(),
+                created.getOwner() != null ? created.getOwner().getId() : null,
+                created.getTitle(),
+                created.getDescription(),
+                created.getOwner() != null ? created.getOwner().getClerkUserId() : null
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGallery(
-        @PathVariable Long id,
-        @AuthenticationPrincipal Jwt jwt
+    public ResponseEntity<GalleryResponseDto> deleteGallery(
+            @PathVariable Long id,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        galleryService.deleteGallery(id, jwt.getSubject());
-        return ResponseEntity.noContent().build();
+        Gallery deleted = galleryService.deleteGallery(id, jwt.getSubject());
+        GalleryResponseDto response = new GalleryResponseDto(
+                deleted.getId(),
+                deleted.getOwner() != null ? deleted.getOwner().getId() : null,
+                deleted.getTitle(),
+                deleted.getDescription(),
+                deleted.getOwner() != null ? deleted.getOwner().getClerkUserId() : null
+        );
+        return ResponseEntity.ok(response);
     }
 }

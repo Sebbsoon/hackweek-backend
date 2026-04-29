@@ -26,7 +26,7 @@ public class GalleryService {
         return galleryRepository.save(gallery);
     }
 
-    public void deleteGallery(Long galleryId, String clerkUserId) {
+    public Gallery deleteGallery(Long galleryId, String clerkUserId) {
         Gallery gallery = galleryRepository.findById(galleryId)
                 .orElseThrow(() -> new IllegalArgumentException("Gallery not found"));
 
@@ -35,6 +35,7 @@ public class GalleryService {
             throw new AccessDeniedException("Not allowed to delete this gallery");
         }
 
-        galleryRepository.delete(gallery);
+         galleryRepository.delete(gallery);
+        return gallery;
     }
 }
